@@ -2,17 +2,112 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>PASF - Gateway</title>
+    <title>PASF - Sala do Futuro</title>
     <style>
-        body { background: #0d1117; color: #58a6ff; font-family: sans-serif; text-align: center; padding-top: 50px; }
-        .box { border: 1px solid #30363d; padding: 20px; border-radius: 10px; display: inline-block; }
+        body { 
+            background: #1a1512; 
+            color: #e8e6e3; 
+            font-family: sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0;
+        }
+        .login-card { 
+            background: #2a221d; 
+            padding: 30px; 
+            border-radius: 20px; 
+            width: 380px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        }
+        .input-group { margin-bottom: 20px; }
+        label { 
+            display: block;
+            font-size: 11px; 
+            font-weight: bold; 
+            color: #a8a095; 
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        input { 
+            width: 100%; 
+            padding: 15px; 
+            background: #1a1512; 
+            border: 1px solid #3d342d; 
+            border-radius: 10px; 
+            color: white; 
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .captcha-box {
+            background: #1a1512;
+            border: 1px solid #3d342d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+        .btn { 
+            width: 100%; 
+            padding: 15px; 
+            margin-top: 10px; 
+            border-radius: 15px; 
+            border: none; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .btn-primary { background: #e8dcc4; color: #1a1512; }
+        .btn-primary:hover { background: #dcd0b8; }
+        .btn-secondary { background: transparent; border: 1px solid #3d342d; color: #e8dcc4; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h1>PASF Gateway</h1>
-        <p>Status: <span style="color: #238636;">Online</span></p>
-        <p>Aguardando conexão com o CMSP...</p>
+    <div class="login-card">
+        <div class="input-group">
+            <label>RA</label>
+            <input type="text" id="ra" placeholder="RA + digito + sp">
+        </div>
+        
+        <div class="input-group">
+            <label>SENHA</label>
+            <input type="password" id="senha" placeholder="Senha">
+        </div>
+
+        <div class="captcha-box">
+            <input type="checkbox" style="width: 20px; margin-right: 10px;">
+            <span>Eu não sou um robô</span>
+        </div>
+
+        <button class="btn btn-primary" onclick="executar('pendentes')">Atividades Pendentes</button>
+        <button class="btn btn-secondary" onclick="executar('expiradas')">Atividades Expiradas</button>
     </div>
+
+    <script>
+        function executar(tipo) {
+            const ra = document.getElementById('ra').value;
+            const senha = document.getElementById('senha').value;
+            
+            if(!ra || !senha) {
+                alert("Por favor, preencha o RA e a Senha.");
+                return;
+            }
+
+            alert(`O Algoritmo está iniciando a varredura de \({tipo} para o RA: \){ra}`);
+            
+            // Aqui o seu site envia os dados para o Python no Render
+            fetch('/capturar', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ ra: ra, senha: senha, acao: tipo })
+            });
+        }
+    </script>
 </body>
 </html>
