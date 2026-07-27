@@ -1,87 +1,21 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>PASF - Protótipo de Automação</title>
-    <style>
-        /* Estilos do seu Layout Escuro (Igual ao que você mandou) */
-        body { background: #1a1512; color: #e8e6e3; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: #2a221d; padding: 30px; border-radius: 20px; width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .hidden { display: none; }
-        
-        /* Interface de Atividades (A Nova Aba) */
-        .atividades-lista { max-height: 300px; overflow-y: auto; margin: 20px 0; border: 1px solid #3d342d; padding: 10px; border-radius: 10px; }
-        .tarefa-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #3d342d; }
-        .delay-control { margin: 15px 0; padding: 10px; background: #1a1512; border-radius: 10px; font-size: 13px; }
-        
-        /* Botões */
-        .btn { width: 100%; padding: 15px; margin-top: 10px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-primary { background: #e8dcc4; color: #1a1512; }
-        .btn-select-all { background: #3d342d; color: #e8dcc4; margin-bottom: 10px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- ABA 1: LOGIN -->
-        <div id="aba-login">
-            <label>RA</label>
-            <input type="text" id="ra" style="width:100%; padding:15px; background:#1a1512; border:1px solid #3d342d; color:white; border-radius:10px; margin-bottom:15px;">
-            <label>SENHA</label>
-            <input type="password" id="senha" style="width:100%; padding:15px; background:#1a1512; border:1px solid #3d342d; color:white; border-radius:10px; margin-bottom:15px;">
-            
-            <button class="btn btn-primary" onclick="conectar()">Entrar e Buscar Atividades</button>
-        </div>
+async function iniciarProcesso() {
+    // 1. Pega os dados da tela
+    // 2. Faz o fetch para '/login_e_buscar'
+    // 3. Se sucesso:
+    document.getElementById('aba-login').style.display = 'none';
+    document.getElementById('aba-tarefas').style.display = 'block';
+    
+    // Se a lista de tarefas vier vazia do governo (como é o seu caso atual)
+    // o site dirá a verdade:
+    if(data.tarefas.length === 0) {
+        document.getElementById('lista-corpo').innerHTML = "<p>Nenhuma atividade pendente encontrada para este RA.</p>";
+    }
+}
 
-        <!-- ABA 2: SELEÇÃO DE TAREFAS (SÓ APARECE APÓS LOGIN) -->
-        <div id="aba-tarefas" class="hidden">
-            <h3>Atividades Encontradas</h3>
-            
-            <button class="btn btn-select-all" onclick="selecionarTodas()">Selecionar Todas</button>
-            
-            <div class="atividades-lista" id="lista-corpo">
-                <!-- O Bot vai injetar as tarefas aqui -->
-                <p style="text-align:center; color:#a8a095;">Buscando tarefas...</p>
-            </div>
+function selecionarTodas() {
+    const checkboxes = document.querySelectorAll('.task-check');
+    checkboxes.forEach(cb => cb.checked = true);
+}
 
-            <div class="delay-control">
-                Tempo por tarefa: 
-                <select id="delay-tempo" style="background:#2a221d; color:white; border:1px solid #3d342d;">
-                    <option value="180">3 Minutos</option>
-                    <option value="240">4 Minutos</option>
-                    <option value="300" selected>5 Minutos</option>
-                </select>
-            </div>
-
-            <button class="btn btn-primary" onclick="iniciarAutomacao()">INICIAR RESOLUÇÃO</button>
-        </div>
-    </div>
-
-    <script>
-        function conectar() {
-            // Lógica de Troca de Aba
-            document.getElementById('aba-login').classList.add('hidden');
-            document.getElementById('aba-tarefas').classList.remove('hidden');
-            
-            // Simulação da Varredura (Onde o bot busca na API)
-            setTimeout(() => {
-                const lista = document.getElementById('lista-corpo');
-                lista.innerHTML = `
-                    <div class="tarefa-item"><input type="checkbox" class="task-chk"> <span>Tarefa 01 - Matemática</span></div>
-                    <div class="tarefa-item"><input type="checkbox" class="task-chk"> <span>Tarefa 02 - Física</span></div>
-                    <div class="tarefa-item"><input type="checkbox" class="task-chk"> <span>Tarefa 03 - Química</span></div>
-                `;
-            }, 1500);
-        }
-
-        function selecionarTodas() {
-            const checkboxes = document.querySelectorAll('.task-chk');
-            checkboxes.forEach(cb => cb.checked = true);
-        }
-
-        function iniciarAutomacao() {
-            const tempo = document.getElementById('delay-tempo').value;
-            alert(`O BOT iniciou! Resolvendo tarefas selecionadas com intervalo de ${tempo/60} minutos.`);
-        }
-    </script>
 </body>
 </html>
