@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, jsonify
 app = Flask(__name__)
 
 # COLE ABAIXO a "URL de Solicitação" (Request URL) que apareceu no seu print do 'token'
-URL_OFICIAL_TOKEN = "COLOQUE_AQUI_A_URL_DO_SEU_PRINT"
+URL_OFICIAL_TOKEN = https://edusp-api.ip.tv/registration/edusp/token
 
 @app.route('/')
 def index():
