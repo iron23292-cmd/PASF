@@ -3,8 +3,8 @@ from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
-# URL REAL QUE VOCÊ DESCOBRIU
-AUTH_URL = "https://edusp-api.ip.tv/registration/edusp/token"
+# COLE ABAIXO a "URL de Solicitação" (Request URL) que apareceu no seu print do 'token'
+URL_OFICIAL_TOKEN = "COLOQUE_AQUI_A_URL_DO_SEU_PRINT"
 
 @app.route('/')
 def index():
@@ -13,34 +13,31 @@ def index():
 @app.route('/login_e_buscar', methods=['POST'])
 def login_e_buscar():
     dados = request.json
-    ra = dados.get('ra')
-    senha = dados.get('senha')
+    ra = dados.get('ra', '').strip()
+    senha = dados.get('senha', '').strip()
     
-    # O MOTOR REAL: Falando com o servidor oficial do governo
-    payload = {
-        "login": ra,
-        "senha": senha
-    }
+    # Motor Real: Conversando com o servidor oficial
+    payload = {"login": ra, "senha": senha}
     headers = {
         "Content-Type": "application/json",
         "Origin": "https://saladofuturo.educacao.sp.gov.br"
     }
     
     try:
-        response = requests.post(AUTH_URL, json=payload, headers=headers)
+        response = requests.post(URL_OFICIAL_TOKEN, json=payload, headers=headers, timeout=15)
         if response.status_code == 200:
             res_data = response.json()
-            # Se logou, retornamos os dados REAIS vindos do governo
+            # Retorna os dados REAIS vindos do governo
             return jsonify({
                 "status": "sucesso", 
                 "nome": res_data.get('DadosUsuario', {}).get('NAME', 'Usuário'),
                 "token": res_data.get('token'),
-                "tarefas": [] # Aqui buscaremos as tarefas reais no próximo passo
+                "tarefas": [] # Aqui o bot buscará a lista real no próximo passo
             })
         else:
-            return jsonify({"status": "erro", "mensagem": "RA ou Senha incorretos no sistema oficial."})
+            return jsonify({"status": "erro", "mensagem": "RA ou Senha inválidos no sistema oficial."})
     except Exception as e:
-        return jsonify({"status": "erro", "mensagem": "Erro de conexão: " + str(e)})
+        return jsonify({"status": "erro", "mensagem": "Erro de conexão com a API."})
 
 if __name__ == '__main__':
     app.run()
