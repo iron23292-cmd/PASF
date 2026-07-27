@@ -1,21 +1,67 @@
-async function iniciarProcesso() {
-    // 1. Pega os dados da tela
-    // 2. Faz o fetch para '/login_e_buscar'
-    // 3. Se sucesso:
-    document.getElementById('aba-login').style.display = 'none';
-    document.getElementById('aba-tarefas').style.display = 'block';
-    
-    // Se a lista de tarefas vier vazia do governo (como é o seu caso atual)
-    // o site dirá a verdade:
-    if(data.tarefas.length === 0) {
-        document.getElementById('lista-corpo').innerHTML = "<p>Nenhuma atividade pendente encontrada para este RA.</p>";
-    }
-}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>PASF - Protótipo de Automação</title>
+    <style>
+        body { background: #1a1512; color: #e8e6e3; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: #2a221d; padding: 30px; border-radius: 20px; width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .hidden { display: none; }
+        input { width: 100%; padding: 15px; margin: 10px 0; background: #1a1512; border: 1px solid #3d342d; border-radius: 10px; color: white; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; margin-top: 10px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; }
+        .btn-primary { background: #e8dcc4; color: #1a1512; }
+        .btn-secondary { background: transparent; border: 1px solid #3d342d; color: #e8dcc4; }
+        .lista { margin: 20px 0; border: 1px solid #3d342d; padding: 10px; border-radius: 10px; max-height: 200px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="aba-login">
+            <input type="text" id="ra" placeholder="RA com digito e SP">
+            <input type="password" id="senha" placeholder="Senha">
+            <button class="btn btn-primary" onclick="fazerLogin()">ACESSAR SALA DO FUTURO</button>
+        </div>
 
-function selecionarTodas() {
-    const checkboxes = document.querySelectorAll('.task-check');
-    checkboxes.forEach(cb => cb.checked = true);
-}
+        <div id="aba-tarefas" class="hidden">
+            <h3 id="boas-vindas">Olá!</h3>
+            <button class="btn btn-secondary" onclick="selecionarTodas()">☑ SELECIONAR TODAS</button>
+            <div id="lista-corpo" class="lista">
+                <p>Buscando tarefas...</p>
+            </div>
+            <button class="btn btn-primary">EXECUTAR ALGORITMO</button>
+        </div>
+    </div>
 
+    <script>
+        async function fazerLogin() {
+            const ra = document.getElementById('ra').value;
+            const senha = document.getElementById('senha').value;
+            
+            const res = await fetch('/login_e_buscar', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ra, senha})
+            });
+            const data = await res.json();
+
+            if(data.status === 'sucesso') {
+                document.getElementById('aba-login').classList.add('hidden');
+                document.getElementById('aba-tarefas').classList.remove('hidden');
+                document.getElementById('boas-vindas').innerText = "Olá, " + data.nome.split(' ')[0];
+                
+                const container = document.getElementById('lista-corpo');
+                if(data.tarefas.length === 0) {
+                    container.innerHTML = "<p>Nenhuma atividade pendente encontrada.</p>";
+                }
+            } else {
+                alert(data.mensagem);
+            }
+        }
+
+        function selecionarTodas() {
+            const checks = document.querySelectorAll('.task-check');
+            checks.forEach(c => c.checked = true);
+        }
+    </script>
 </body>
 </html>
